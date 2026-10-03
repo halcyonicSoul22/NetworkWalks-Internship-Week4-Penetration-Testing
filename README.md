@@ -1,182 +1,69 @@
-# 🛡️ NetworkWalks Cybersecurity Internship – Week 4
+# NetworkWalks Cybersecurity Internship – Week 4
 
 This repository documents my **Week 4 practical work** completed during my Cybersecurity Internship at **NetworkWalks**.
 
-The focus of this week was **Web Application Penetration Testing** through an authorized and controlled security assessment.
+## 🛡️ Week 4 — Web Application Penetration Testing
 
----
+The week focused on performing a structured **black-box web application security assessment** in an authorized and controlled environment.
 
-## 🔍 Week 4 — Web Application Penetration Testing
+### Assessment Overview
 
-During this week, I followed a structured penetration-testing approach covering:
+- **Assessment Type:** Black-Box Web Application Penetration Test
+- **Target:** Mediroza General Hospital (authorized training environment)
+- **Duration:** 5 Days
+- **Methodology:** Reconnaissance → Enumeration → Vulnerability Identification → Controlled Exploitation → Risk Assessment → Remediation
+- **Authorization:** Testing performed under written authorization
+- **Environment:** Controlled educational assessment
 
-- Reconnaissance
-- Web technology identification
-- Directory and endpoint enumeration
-- Authentication security testing
-- SQL Injection testing
-- Sensitive file exposure analysis
-- PDF password-security testing
-- Error disclosure analysis
-- Directory listing review
-- Risk assessment
-- Security remediation recommendations
+## 🔍 Activities Performed
 
-The assessment followed a black-box methodology, with testing performed under written authorization.
+### 1. Reconnaissance & Enumeration
 
----
+- Performed passive and active reconnaissance.
+- Identified web technologies and exposed services.
+- Enumerated directories and accessible endpoints.
+- Reviewed the application's externally visible attack surface.
 
-## 🎯 Assessment Objectives
+### 2. Authentication Security Testing
 
-The main objectives were to:
+- Tested the patient portal login functionality.
+- Identified an authentication-related SQL injection vulnerability in the authorized environment.
+- Validated the finding through controlled testing.
 
-1. Identify the application's externally exposed attack surface.
-2. Discover accessible directories and endpoints.
-3. Assess authentication security.
-4. Identify potential web application vulnerabilities.
-5. Evaluate sensitive information exposure.
-6. Assess password and document security.
-7. Document security findings and their potential impact.
-8. Provide appropriate remediation recommendations.
+### 3. Sensitive File Exposure
 
----
+- Investigated publicly accessible directories.
+- Identified an exposed database backup as a sensitive information disclosure issue.
+- Assessed the potential impact of exposed staff and organizational data.
 
-## 🔎 Reconnaissance & Enumeration
+### 4. PDF & Password Security Testing
 
-The assessment began with reconnaissance and enumeration to understand the target's externally visible infrastructure.
+- Reviewed password-protected PDF documents obtained during the authorized assessment.
+- Tested the strength of PDF password protection using password-recovery techniques.
+- Documented the security impact of weak passwords protecting sensitive information.
 
-Activities included:
+### 5. Error & Configuration Review
 
-- Domain reconnaissance
-- Web technology fingerprinting
-- Port and service enumeration
-- Directory discovery
-- Endpoint enumeration
-- Review of publicly accessible resources
+- Identified verbose database error messages.
+- Checked directory listing configuration.
+- Evaluated how these issues could assist further attack attempts.
 
-### Tools Used
+## 🧰 Tools Used
 
 - **Nmap** — Port scanning and service enumeration
 - **WhatWeb** — Web technology fingerprinting
 - **Gobuster** — Directory and endpoint enumeration
-- **WHOIS** — Domain reconnaissance
 - **cURL** — HTTP request testing
+- **WHOIS** — Domain reconnaissance
+- **pdfcrack** — Authorized PDF password-recovery testing
+- **pdf2john** — PDF hash extraction
+- **Hashcat** — Password/hash security testing
 
----
+## 📊 Findings Identified
 
-## 💉 Web Application Security Testing
+The assessment documented the following categories of security weaknesses:
 
-During testing of the authorized application, an **SQL Injection vulnerability affecting authentication** was identified.
-
-The vulnerability allowed authentication controls to be bypassed in the controlled assessment environment.
-
-### Finding
-
-**F-01 — SQL Injection / Authentication Bypass**
-
-**Risk:** Critical
-
-The assessment identified insufficient protection of user-supplied input in the authentication functionality.
-
-### Recommended Remediation
-
-- Use prepared statements / parameterized queries.
-- Validate user input on the server side.
-- Follow secure coding practices.
-- Apply the principle of least privilege to database accounts.
-- Perform a broader code review of authentication and query-processing functionality.
-
----
-
-## 📂 Sensitive File Exposure
-
-Directory enumeration also identified an **exposed database backup file** within a publicly accessible directory.
-
-### Finding
-
-**F-02 — Exposed Database Backup**
-
-**Risk:** Critical
-
-The exposed backup contained sensitive organizational information.
-
-### Recommended Remediation
-
-- Remove sensitive backup files from the public web root.
-- Store backups outside publicly accessible directories.
-- Encrypt backups at rest.
-- Regularly audit web directories for unintended file exposure.
-- Establish secure backup-management procedures.
-
----
-
-## 🔐 PDF Password Security Testing
-
-The assessment also included testing of password-protected PDF documents obtained within the authorized environment.
-
-### Finding
-
-**F-03 — Weak PDF Password Protection**
-
-**Risk:** High
-
-Password-recovery techniques were used to assess the strength of the protection applied to the documents.
-
-### Recommended Remediation
-
-- Enforce strong and unique passwords.
-- Avoid common or dictionary-based passwords.
-- Use securely generated passwords.
-- Prefer stronger modern encryption standards.
-- Where possible, use authenticated application-based access instead of relying solely on document passwords.
-
----
-
-## ⚠️ Error Disclosure
-
-Testing also identified **verbose SQL/database error messages** being returned by the application.
-
-### Finding
-
-**F-04 — Verbose SQL Error Disclosure**
-
-**Risk:** Medium
-
-Detailed database errors can reveal useful technical information to an attacker and assist further vulnerability testing.
-
-### Recommended Remediation
-
-- Disable detailed error display in production.
-- Return generic error messages to users.
-- Log technical errors securely on the server.
-- Avoid exposing database details in HTTP responses.
-
----
-
-## 📁 Directory Listing
-
-Directory listing was identified as another security weakness.
-
-### Finding
-
-**F-05 — Directory Listing Enabled**
-
-**Risk:** Medium
-
-Exposed directory listings can reveal application structure, files, backups, and other resources that should not be publicly browsable.
-
-### Recommended Remediation
-
-- Disable directory listing.
-- Review publicly accessible directories.
-- Remove unnecessary files from the web root.
-- Conduct regular security configuration reviews.
-
----
-
-## 📊 Findings Summary
-
-| ID | Finding | Risk |
+| Finding | Category | Risk |
 |---|---|---|
 | F-01 | SQL Injection / Authentication Bypass | Critical |
 | F-02 | Exposed Database Backup | Critical |
@@ -184,102 +71,79 @@ Exposed directory listings can reveal application structure, files, backups, and
 | F-04 | Verbose SQL Error Disclosure | Medium |
 | F-05 | Directory Listing Enabled | Medium |
 
-The assessment report documents these five findings and their corresponding remediation recommendations.
+## 🖼️ Report Evidence
 
----
+A sample visual from the penetration testing report is included below:
 
-## 🧰 Tools Used
+![Week 4 Penetration Testing Report](./report/1.png)
 
-| Tool | Purpose |
-|---|---|
-| Nmap | Port scanning & service enumeration |
-| WhatWeb | Web technology fingerprinting |
-| Gobuster | Directory enumeration |
-| cURL | HTTP request testing |
-| WHOIS | Domain reconnaissance |
-| pdfcrack | Authorized PDF password-recovery testing |
-| pdf2john | PDF hash extraction |
-| Hashcat | Password/hash security testing |
+## 📄 Penetration Testing Report
 
-These tools were used as part of the documented assessment methodology.
+The detailed HTML penetration testing report is included in the repository under the `report` folder.
 
----
+```text
+report/
+├── 1.png
+└── Penetration-Testing-Report-Mediroza.html
+```
 
-## 🛠️ Remediation & Reporting
+## 🛠️ Key Remediation Recommendations
 
-A major part of Week 4 was not only identifying vulnerabilities, but also understanding how to communicate them professionally.
+- Use prepared statements / parameterized queries to prevent SQL injection.
+- Validate and securely handle all user-supplied input.
+- Remove database backups and other sensitive files from publicly accessible web directories.
+- Store backups outside the web root and protect them with strong encryption.
+- Enforce strong, unique passwords for sensitive documents.
+- Avoid legacy encryption standards where stronger alternatives are available.
+- Disable detailed error messages in production environments.
+- Disable unnecessary directory listing.
+- Perform regular security assessments and follow-up testing after remediation.
 
-For each finding, I focused on:
-
-- Vulnerability identification
-- Risk classification
-- Potential impact
-- Evidence
-- Remediation recommendations
-- Prioritization
-
-The assessment recommendations included prepared statements for SQL injection, secure backup storage, stronger document passwords, safer error handling, and disabling directory listing.
-
----
-
-## 📚 Learning Outcomes
-
-Through this week's practical work, I gained hands-on exposure to:
-
-- Web application penetration-testing methodology
-- Reconnaissance and enumeration
-- Attack-surface discovery
-- Authentication security testing
-- SQL Injection identification
-- Sensitive file exposure
-- Password-security assessment
-- Error disclosure analysis
-- Security configuration review
-- Vulnerability risk classification
-- Penetration-testing reporting
-- Security remediation planning
-
----
-
-## 📂 Repository Structure
+## 📁 Repository Structure
 
 ```text
 NetworkWalks-Internship-Week4-Penetration-Testing/
 │
 ├── README.md
 │
+├── report/
+│   ├── 1.png
+│   └── Penetration-Testing-Report-Mediroza.html
+│
 ├── reconnaissance/
-│
 ├── enumeration/
-│
 ├── web-security-testing/
-│
 ├── password-security/
-│
 ├── findings/
-│
-├── remediation/
-│
-└── screenshots/
+└── remediation/
 ```
 
-> Add your actual screenshots/evidence to the relevant folders when uploading them.
+> **Note:** Publicly shared materials should contain only sanitized screenshots and information. Do not publish real credentials, passwords, patient information, national IDs, salary records, database backups, private client data, or sensitive exploit evidence.
 
----
+## 🎯 Learning Outcomes
+
+Through this week's work, I gained practical exposure to:
+
+- Web application penetration-testing methodology
+- Reconnaissance and attack-surface enumeration
+- Authentication security testing
+- SQL injection identification
+- Sensitive file exposure analysis
+- Password-security assessment
+- Error-message and configuration review
+- Vulnerability risk classification
+- Writing professional penetration-testing findings
+- Translating technical findings into remediation recommendations
 
 ## ⚠️ Ethical & Legal Notice
 
-All testing documented in this repository was performed in an **authorized and controlled educational environment**.
+All security testing documented in this repository was performed in an **authorized, controlled educational environment**.
 
-No security testing should be performed against systems, applications, domains, or data without explicit permission from the owner.
-
-Sensitive information, credentials, passwords, database backups, personal information, medical information, and other confidential client data should **not** be published in a public repository.
-
----
+The techniques described are intended for **authorized security testing, training, and defensive purposes only**. Never test systems, applications, domains, or data without explicit permission from the owner.
 
 ## 👨‍💻 Internship
 
-**NetworkWalks Cybersecurity Internship**  
-**Batch B083 — Week 4**
+**NetworkWalks Cybersecurity Internship — Batch B083**  
+**Week 4: Web Application Penetration Testing**
 
 Special thanks to **Waqas Karim (CCIE)** for his guidance and support throughout the internship.
