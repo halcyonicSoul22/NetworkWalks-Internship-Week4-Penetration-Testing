@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penetration Testing Report – Mediroza General Hospital</title>
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --teal: #1b998b;
+    --red: #c0392b;
+    --orange: #e67e22;
+    --yellow: #f1c40f;
+    --green: #27ae60;
+    --light: #f4f6f8;
+    --border: #dce1e7;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--text); background: #fff; font-size: 14px; line-height: 1.65; }
+
+  /* COVER */
+  .cover { background: var(--navy); color: #fff; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 80px 60px; position: relative; overflow: hidden; }
+  .cover::before { content: ''; position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; background: rgba(27,153,139,0.12); }
+  .cover::after { content: ''; position: absolute; bottom: -60px; left: -60px; width: 300px; height: 300px; border-radius: 50%; background: rgba(27,153,139,0.08); }
+  .cover-badge { display: inline-block; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 5px 14px; border-radius: 3px; margin-bottom: 32px; text-transform: uppercase; }
+  .cover h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 12px; }
+  .cover h1 span { color: var(--teal); }
+  .cover .subtitle { font-size: 20px; color: rgba(255,255,255,0.65); margin-bottom: 48px; }
+  .cover-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 680px; }
+  .meta-box { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 18px 20px; }
+  .meta-box .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--teal); font-weight: 700; margin-bottom: 6px; }
+  .meta-box .val { font-size: 15px; font-weight: 600; color: #fff; }
+  .cover-footer { position: absolute; bottom: 32px; left: 60px; right: 60px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+  .cover-footer span { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .nw-brand { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 1px; }
+  .nw-brand span { color: var(--teal); }
+
+  /* CONTENT */
+  .page { max-width: 900px; margin: 0 auto; padding: 60px 40px; }
+  .page-break { page-break-before: always; }
+
+  /* SECTION HEADER */
+  .section-num { font-size: 11px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+  h2 { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 3px solid var(--teal); }
+  h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin: 28px 0 12px; }
+  p { margin-bottom: 14px; color: #3a4a5c; }
+
+  /* RISK BADGES */
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .critical { background: #fde8e6; color: var(--red); border: 1px solid #f5c6c2; }
+  .high { background: #fef0e6; color: var(--orange); border: 1px solid #fad7b5; }
+  .medium { background: #fef9e6; color: #c68b00; border: 1px solid #f9e7a0; }
+  .low { background: #e8f8f0; color: var(--green); border: 1px solid #a8dfc0; }
+
+  /* EXEC SUMMARY BOX */
+  .exec-box { background: var(--light); border-left: 5px solid var(--teal); border-radius: 0 8px 8px 0; padding: 24px 28px; margin: 20px 0 32px; }
+  .exec-box p { margin-bottom: 0; font-size: 15px; line-height: 1.75; }
+
+  /* RISK SUMMARY TABLE */
+  .risk-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
+  .risk-card { text-align: center; border-radius: 10px; padding: 20px 12px; }
+  .risk-card.c { background: #fde8e6; border: 2px solid #f5c6c2; }
+  .risk-card.h { background: #fef0e6; border: 2px solid #fad7b5; }
+  .risk-card.m { background: #fef9e6; border: 2px solid #f9e7a0; }
+  .risk-card.l { background: #e8f8f0; border: 2px solid #a8dfc0; }
+  .risk-card .num { font-size: 36px; font-weight: 900; }
+  .risk-card.c .num { color: var(--red); }
+  .risk-card.h .num { color: var(--orange); }
+  .risk-card.m .num { color: #c68b00; }
+  .risk-card.l .num { color: var(--green); }
+  .risk-card .lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  /* SCOPE TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 28px; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 11px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--light); }
+  td:first-child { font-weight: 600; color: var(--navy); width: 200px; }
+
+  /* FINDING CARD */
+  .finding { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 36px; overflow: hidden; }
+  .finding-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; background: var(--navy); }
+  .finding-header .finding-title { color: #fff; font-size: 16px; font-weight: 700; }
+  .finding-header .finding-id { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+  .finding-body { padding: 22px; }
+  .finding-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 18px; }
+  .finding-field { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .finding-field:nth-child(odd) { border-right: 1px solid var(--border); }
+  .finding-field .f-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  .finding-field .f-val { font-size: 14px; font-weight: 600; color: var(--navy); }
+
+  /* CODE BLOCK */
+  .code { background: #1a1a2e; color: #e2e8f0; font-family: 'Courier New', monospace; font-size: 13px; padding: 18px 20px; border-radius: 8px; margin: 12px 0; overflow-x: auto; line-height: 1.6; }
+  .code .comment { color: #718096; }
+  .code .highlight { color: #68d391; }
+  .code .url { color: #63b3ed; }
+  .code .payload { color: #fc8181; font-weight: 700; }
+
+  /* EVIDENCE BOX */
+  .evidence { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 16px 20px; margin: 14px 0; }
+  .evidence .ev-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 8px; }
+  .evidence p { margin: 0; color: #166534; font-size: 13px; }
+
+  /* IMPACT BOX */
+  .impact { background: #fff5f5; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px 20px; margin: 14px 0; }
+  .impact .ev-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--red); margin-bottom: 8px; }
+  .impact p { margin: 0; color: #7f1d1d; font-size: 13px; }
+
+  /* REMEDIATION */
+  .remediation { background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 16px 20px; margin: 14px 0; }
+  .remediation .ev-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #1d4ed8; margin-bottom: 8px; }
+  .remediation ul { padding-left: 18px; color: #1e3a5f; font-size: 13px; }
+  .remediation ul li { margin-bottom: 6px; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* HEADER STRIP */
+  .hdr-strip { background: var(--navy); color: rgba(255,255,255,0.5); font-size: 11px; padding: 8px 40px; display: flex; justify-content: space-between; letter-spacing: 0.5px; }
+  .hdr-strip strong { color: #fff; }
+
+  /* TIMELINE */
+  .timeline { display: flex; gap: 0; margin: 24px 0; }
+  .tl-step { flex: 1; text-align: center; position: relative; }
+  .tl-step::after { content: '→'; position: absolute; right: -12px; top: 12px; color: var(--teal); font-weight: 900; font-size: 18px; }
+  .tl-step:last-child::after { display: none; }
+  .tl-dot { width: 36px; height: 36px; background: var(--teal); border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 13px; }
+  .tl-label { font-size: 11px; font-weight: 600; color: var(--navy); }
+
+  /* FINAL TABLE */
+  .vuln-table th { background: var(--navy); }
+  .vuln-table td:last-child { font-weight: 700; }
+
+  @media print {
+    .cover { min-height: auto; padding: 40px; }
+    .page { padding: 40px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ COVER PAGE ═══════════════ -->
+<div class="cover">
+  <div class="cover-badge">Confidential — Authorised Personnel Only</div>
+  <h1>Penetration Testing<br>Report — <span>Mediroza</span><br>General Hospital</h1>
+  <p class="subtitle">Black-Box Web Application Security Assessment</p>
+  <div class="cover-meta">
+    <div class="meta-box">
+      <div class="label">Client</div>
+      <div class="val">Mediroza General Hospital</div>
+    </div>
+    <div class="meta-box">
+      <div class="label">Assessment Type</div>
+      <div class="val">Black-Box Pentest</div>
+    </div>
+    <div class="meta-box">
+      <div class="label">Duration</div>
+      <div class="val">5 Days</div>
+    </div>
+    <div class="meta-box">
+      <div class="label">Target</div>
+      <div class="val">medirozahospital.com</div>
+    </div>
+    <div class="meta-box">
+      <div class="label">Prepared By</div>
+      <div class="val">Haram</div>
+    </div>
+    <div class="meta-box">
+      <div class="label">Report Date</div>
+      <div class="val">October 2026</div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <span>NetworkWalks Cybersecurity Internship — Batch B083 — Week 4</span>
+    <span class="nw-brand">NETWORK<span>WALKS</span></span>
+  </div>
+</div>
+
+<!-- ═══════════════ HEADER STRIP ═══════════════ -->
+<div class="hdr-strip">
+  <span><strong>NETWORKWALKS</strong> — Penetration Testing Report</span>
+  <span>Client: Mediroza General Hospital &nbsp;|&nbsp; CONFIDENTIAL</span>
+</div>
+
+<!-- ═══════════════ SECTION 01: EXECUTIVE SUMMARY ═══════════════ -->
+<div class="page">
+  <div class="section-num">Section 01</div>
+  <h2>Executive Summary</h2>
+
+  <div class="exec-box">
+    <p>A black-box penetration test was conducted against <strong>https://medirozahospital.com</strong>, the web infrastructure of Mediroza General Hospital. The assessment revealed <strong>four significant vulnerabilities</strong> — two rated Critical and two rated High — that together allowed a simulated attacker to gain unauthorised access to confidential patient medical records, staff salary data, national identification numbers, and shareholder financial information, all without any prior credentials or insider knowledge.</p>
+  </div>
+
+  <p>The most severe finding was a <strong>SQL Injection vulnerability</strong> in the Patient Portal login page that allowed complete authentication bypass. This gave access to three encrypted confidential pathology lab reports. The encryption on these reports was subsequently cracked using widely available password-cracking tools due to the use of extremely weak passwords (<code>123456</code>, <code>password</code>). Additionally, an <strong>exposed database backup file</strong> was found publicly accessible on the web server, containing the full HR records of 30 employees and financial shareholder data.</p>
+
+  <p>The combination of these vulnerabilities represents a <strong>critical risk</strong> to patient confidentiality, staff privacy, and regulatory compliance under healthcare data protection legislation.</p>
+
+  <h3>Overall Risk Summary</h3>
+  <div class="risk-summary">
+    <div class="risk-card c"><div class="num">2</div><div class="lbl">Critical</div></div>
+    <div class="risk-card h"><div class="num">1</div><div class="lbl">High</div></div>
+    <div class="risk-card m"><div class="num">2</div><div class="lbl">Medium</div></div>
+    <div class="risk-card l"><div class="num">0</div><div class="lbl">Low</div></div>
+  </div>
+
+  <h3>Key Findings at a Glance</h3>
+  <table class="vuln-table">
+    <tr><th>#</th><th>Vulnerability</th><th>Location</th><th>Risk</th></tr>
+    <tr><td>F-01</td><td>SQL Injection — Authentication Bypass</td><td>/patient/login.php</td><td><span class="badge critical">Critical</span></td></tr>
+    <tr><td>F-02</td><td>Exposed Database Backup File</td><td>/old/mediroza_db_backup_2019.sql</td><td><span class="badge critical">Critical</span></td></tr>
+    <tr><td>F-03</td><td>Weak PDF Password Encryption</td><td>Patient Lab Report PDFs</td><td><span class="badge high">High</span></td></tr>
+    <tr><td>F-04</td><td>Verbose SQL Error Disclosure</td><td>/patient/login.php</td><td><span class="badge medium">Medium</span></td></tr>
+    <tr><td>F-05</td><td>Directory Listing Enabled</td><td>/old/ and /staff/</td><td><span class="badge medium">Medium</span></td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════ SECTION 02: SCOPE & METHODOLOGY ═══════════════ -->
+<div class="hdr-strip">
+  <span><strong>NETWORKWALKS</strong> — Penetration Testing Report</span>
+  <span>Client: Mediroza General Hospital &nbsp;|&nbsp; CONFIDENTIAL</span>
+</div>
+<div class="page">
+  <div class="section-num">Section 02</div>
+  <h2>Scope and Methodology</h2>
+
+  <h3>Engagement Details</h3>
+  <table>
+    <tr><td>Target Domain</td><td>https://medirozahospital.com</td></tr>
+    <tr><td>IP Address</td><td>199.188.201.16</td></tr>
+    <tr><td>Server</td><td>LiteSpeed Web Server (shared hosting — server274.web-hosting.com)</td></tr>
+    <tr><td>CMS Identified</td><td>Mediroza CMS 1.4.2 (custom-built)</td></tr>
+    <tr><td>Assessment Type</td><td>Black-Box — No prior credentials or source code provided</td></tr>
+    <tr><td>Authorisation</td><td>Written permission granted by client prior to testing</td></tr>
+    <tr><td>Rules of Engagement</td><td>No social engineering. No denial of service. Target domain only.</td></tr>
+    <tr><td>Testing Period</td><td>October 2026 (5 Days)</td></tr>
+  </table>
+
+  <h3>Tools Used</h3>
+  <table>
+    <tr><th>Tool</th><th>Purpose</th></tr>
+    <tr><td>Nmap 7.95</td><td>Port scanning and service version enumeration</td></tr>
+    <tr><td>WhatWeb</td><td>Web technology fingerprinting</td></tr>
+    <tr><td>Gobuster 3.8</td><td>Directory and endpoint enumeration</td></tr>
+    <tr><td>cURL</td><td>Manual HTTP request crafting and SQL injection testing</td></tr>
+    <tr><td>Whois</td><td>Domain registration and passive reconnaissance</td></tr>
+    <tr><td>pdfcrack</td><td>PDF password recovery via dictionary attack</td></tr>
+    <tr><td>Hashcat 6.2.6</td><td>Hash cracking (attempted)</td></tr>
+    <tr><td>pdf2john</td><td>PDF hash extraction for offline cracking</td></tr>
+  </table>
+
+  <h3>Methodology — Attack Flow</h3>
+  <div class="timeline">
+    <div class="tl-step"><div class="tl-dot">1</div><div class="tl-label">Recon &amp; Enumeration</div></div>
+    <div class="tl-step"><div class="tl-dot">2</div><div class="tl-label">Directory Discovery</div></div>
+    <div class="tl-step"><div class="tl-dot">3</div><div class="tl-label">SQLi Auth Bypass</div></div>
+    <div class="tl-step"><div class="tl-dot">4</div><div class="tl-label">PDF Download</div></div>
+    <div class="tl-step"><div class="tl-dot">5</div><div class="tl-label">Encryption Crack</div></div>
+    <div class="tl-step"><div class="tl-dot">6</div><div class="tl-label">Data Exfiltration</div></div>
+  </div>
+
+  <p>The assessment followed a structured black-box methodology beginning with passive and active reconnaissance to map the attack surface. Directory enumeration revealed exposed sensitive directories. The patient portal was identified as an authentication-gated target; SQL injection testing led to a complete authentication bypass. Retrieved encrypted PDF lab reports were subsequently decrypted using dictionary attacks. A separately discovered database backup file yielded full staff and shareholder records without requiring any exploitation.</p>
+</div>
+
+<!-- ═══════════════ SECTION 03: FINDINGS ═══════════════ -->
+<div class="hdr-strip">
+  <span><strong>NETWORKWALKS</strong> — Penetration Testing Report</span>
+  <span>Client: Mediroza General Hospital &nbsp;|&nbsp; CONFIDENTIAL</span>
+</div>
+<div class="page">
+  <div class="section-num">Section 03</div>
+  <h2>Findings and Proof of Exploitation</h2>
+
+  <!-- FINDING 01 -->
+  <div class="finding">
+    <div class="finding-header">
+      <div>
+        <div class="finding-title">F-01 — SQL Injection: Authentication Bypass</div>
+        <div class="finding-id">Patient Portal Login &nbsp;|&nbsp; /patient/login.php</div>
+      </div>
+      <span class="badge critical">Critical</span>
+    </div>
+    <div class="finding-body">
+      <div class="finding-grid">
+        <div class="finding-field"><div class="f-label">Vulnerability Type</div><div class="f-val">SQL Injection (Authentication Bypass)</div></div>
+        <div class="finding-field"><div class="f-label">CVSS Score (Estimated)</div><div class="f-val">9.8 — Critical</div></div>
+        <div class="finding-field"><div class="f-label">Affected Endpoint</div><div class="f-val">POST /patient/login.php</div></div>
+        <div class="finding-field"><div class="f-label">Parameter</div><div class="f-val">username (unsanitised)</div></div>
+      </div>
+
+      <h3>Description</h3>
+      <p>The Patient Portal login form at <code>/patient/login.php</code> was found to be vulnerable to SQL Injection. The <code>username</code> parameter is passed directly into a MySQL query without sanitisation or the use of prepared statements. By injecting a SQL comment sequence, it was possible to terminate the password-checking clause and log in as any user — or all users — without supplying a valid password.</p>
+
+      <h3>Proof of Exploitation</h3>
+      <p>The following cURL command was used to inject the payload and retrieve the authenticated dashboard:</p>
+      <div class="code">
+<span class="comment"># SQL Injection payload — comment sequence terminates password check</span><br>
+curl -s -X POST <span class="url">https://medirozahospital.com/patient/login.php</span> \<br>
+&nbsp;&nbsp;-d "<span class="payload">username=admin'-- -</span>&password=x" \<br>
+&nbsp;&nbsp;-L -c cookies.txt -o dashboard.html
+      </div>
+      <p><strong>Injected SQL logic (inferred):</strong></p>
+      <div class="code">
+<span class="comment">-- Original query (assumed):</span><br>
+SELECT * FROM users WHERE username = '<span class="highlight">INPUT</span>' AND password = '...'<br><br>
+<span class="comment">-- After injection:</span><br>
+SELECT * FROM users WHERE username = '<span class="payload">admin'-- -</span>' AND password = '...'<br>
+<span class="comment">--  ↑ password check is commented out — login succeeds</span>
+      </div>
+
+      <div class="evidence">
+        <div class="ev-label">✓ Evidence — Successful Access</div>
+        <p>The server returned HTTP 200 with the authenticated dashboard page titled "My Reports | Mediroza Patient Portal", listing three confidential pathology lab reports belonging to patients S. Dlamini (LR-2024-1187), P. Reddy (LR-2024-1192), and E. Thompson (LR-2024-1205).</p>
+      </div>
+
+      <div class="impact">
+        <div class="ev-label">⚠ Impact</div>
+        <p>An unauthenticated attacker can access any patient's confidential medical records without credentials. Three PDF pathology reports were downloaded and decrypted, exposing patient names, dates of birth, patient IDs, referring doctor names, and sensitive laboratory results.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDING 02 -->
+  <div class="finding">
+    <div class="finding-header">
+      <div>
+        <div class="finding-title">F-02 — Exposed Database Backup File (Unauthenticated)</div>
+        <div class="finding-id">Web Root &nbsp;|&nbsp; /old/mediroza_db_backup_2019.sql</div>
+      </div>
+      <span class="badge critical">Critical</span>
+    </div>
+    <div class="finding-body">
+      <div class="finding-grid">
+        <div class="finding-field"><div class="f-label">Vulnerability Type</div><div class="f-val">Sensitive File Exposure</div></div>
+        <div class="finding-field"><div class="f-label">CVSS Score (Estimated)</div><div class="f-val">9.1 — Critical</div></div>
+        <div class="finding-field"><div class="f-label">Affected URL</div><div class="f-val">/old/mediroza_db_backup_2019.sql</div></div>
+        <div class="finding-field"><div class="f-label">Authentication Required</div><div class="f-val">None — Publicly Accessible</div></div>
+      </div>
+
+      <h3>Description</h3>
+      <p>During directory enumeration, the <code>/old/</code> directory was discovered with directory listing enabled. Within this directory, a full MySQL database backup file (<code>mediroza_db_backup_2019.sql</code>) was found publicly accessible without any authentication. The file contained the complete contents of the <code>mediroza_hr</code> database.</p>
+
+      <div class="code">
+<span class="comment"># Discovery via Gobuster</span><br>
+/old &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Status: 301) [→ <span class="url">https://medirozahospital.com/old/</span>]<br><br>
+<span class="comment"># File downloaded directly — no credentials required</span><br>
+wget <span class="url">https://medirozahospital.com/old/mediroza_db_backup_2019.sql</span><br>
+<span class="highlight">-- 2026-10-02: 6.20K received [200 OK]</span>
+      </div>
+
+      <h3>Data Exposed</h3>
+      <table>
+        <tr><th>Table</th><th>Records</th><th>Sensitive Fields</th></tr>
+        <tr><td>staff</td><td>30 employees</td><td>Full name, job title, email, phone, national_id, monthly_salary_zar, date_joined</td></tr>
+        <tr><td>shareholders</td><td>10 shareholders</td><td>Shareholder name, share percentage, shares held, share class</td></tr>
+      </table>
+
+      <h3>Sample Extracted Data — Staff Salaries</h3>
+      <table>
+        <tr><th>Name</th><th>Job Title</th><th>Department</th><th>Monthly Salary (ZAR)</th></tr>
+        <tr><td>Dr. Johan van der Merwe</td><td>Medical Director</td><td>Management</td><td>R160,000</td></tr>
+        <tr><td>Sarah Botha</td><td>CFO</td><td>Finance</td><td>R152,000</td></tr>
+        <tr><td>Dr. Rajesh Naidoo</td><td>Chief Pathologist</td><td>Diagnostics Lab</td><td>R138,000</td></tr>
+        <tr><td>Linda Fourie</td><td>Receptionist</td><td>Front Office</td><td>R19,000</td></tr>
+        <tr><td colspan="3"><em>+ 26 additional staff records</em></td><td></td></tr>
+      </table>
+
+      <h3>Sample Extracted Data — Shareholders</h3>
+      <table>
+        <tr><th>Shareholder</th><th>Share %</th><th>Shares Held</th><th>Class</th></tr>
+        <tr><td>Dr. Rajesh Naidoo</td><td>18.0%</td><td>180,000</td><td>Ordinary</td></tr>
+        <tr><td>Cedar Health Holdings (Pty) Ltd</td><td>15.0%</td><td>150,000</td><td>Ordinary</td></tr>
+        <tr><td>Dr. Johan van der Merwe</td><td>12.0%</td><td>120,000</td><td>Ordinary</td></tr>
+        <tr><td colspan="3"><em>+ 7 additional shareholders</em></td><td></td></tr>
+      </table>
+
+      <div class="impact">
+        <div class="ev-label">⚠ Impact</div>
+        <p>Full exposure of national ID numbers for 30 employees constitutes a serious PII breach. Salary data and shareholder ownership details are highly confidential corporate records. This data could be used for identity theft, targeted fraud, corporate espionage, or blackmail. This likely violates South Africa's POPIA (Protection of Personal Information Act) and HIPAA-equivalent healthcare data regulations.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDING 03 -->
+  <div class="finding">
+    <div class="finding-header">
+      <div>
+        <div class="finding-title">F-03 — Weak PDF Password Encryption on Confidential Records</div>
+        <div class="finding-id">Patient Lab Reports &nbsp;|&nbsp; LR-2024-1187, LR-2024-1192, LR-2024-1205</div>
+      </div>
+      <span class="badge high">High</span>
+    </div>
+    <div class="finding-body">
+      <div class="finding-grid">
+        <div class="finding-field"><div class="f-label">Vulnerability Type</div><div class="f-val">Weak Cryptographic Controls</div></div>
+        <div class="finding-field"><div class="f-label">Risk Rating</div><div class="f-val">High</div></div>
+        <div class="finding-field"><div class="f-label">Encryption Standard</div><div class="f-val">PDF 1.4, 128-bit RC4</div></div>
+        <div class="finding-field"><div class="f-label">Tool Used</div><div class="f-val">pdfcrack + rockyou.txt wordlist</div></div>
+      </div>
+
+      <h3>Description</h3>
+      <p>Three confidential pathology lab reports were retrieved via the SQL injection vulnerability (F-01). The PDFs were password protected with 128-bit RC4 encryption (PDF standard 1.4). Despite the encryption, all three passwords were recovered within minutes using the <code>pdfcrack</code> tool with the publicly available <code>rockyou.txt</code> dictionary wordlist.</p>
+
+      <h3>Proof of Exploitation — Passwords Recovered</h3>
+      <div class="code">
+$ pdfcrack -f report_dlamini.pdf -w /usr/share/wordlists/rockyou.txt<br>
+<span class="highlight">found user-password: '123456'</span><br><br>
+$ pdfcrack -f report_reddy.pdf -w /usr/share/wordlists/rockyou.txt<br>
+<span class="highlight">found user-password: 'password'</span><br><br>
+$ pdfcrack -f report_thompson.pdf -w /usr/share/wordlists/rockyou.txt<br>
+<span class="highlight">found user-password: '!@#$%^6'</span>
+      </div>
+
+      <h3>Decrypted Patient Records Accessed</h3>
+      <table>
+        <tr><th>Patient</th><th>Patient ID</th><th>Report Date</th><th>Lab Ref</th><th>Key Findings</th></tr>
+        <tr><td>Sipho Dlamini</td><td>MG-P-10231</td><td>2024-11-04</td><td>LR-2024-1187</td><td>WBC: 11.8 (HIGH)</td></tr>
+        <tr><td>Priya Reddy</td><td>MG-P-10244</td><td>2024-11-05</td><td>LR-2024-1192</td><td>Total Cholesterol: HIGH, LDL: HIGH</td></tr>
+        <tr><td>Emily Thompson</td><td>MG-P-10258</td><td>2024-11-06</td><td>LR-2024-1205</td><td>Haemoglobin: LOW, Ferritin: LOW</td></tr>
+      </table>
+
+      <div class="impact">
+        <div class="ev-label">⚠ Impact</div>
+        <p>Full access to confidential patient medical records including diagnoses, lab values, date of birth, and referring doctor details. This constitutes a direct violation of patient confidentiality. Passwords such as <strong>123456</strong> and <strong>password</strong> are among the most commonly used and are cracked instantly by any modern password-cracking tool.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDING 04 -->
+  <div class="finding">
+    <div class="finding-header">
+      <div>
+        <div class="finding-title">F-04 — Verbose SQL Error Disclosure</div>
+        <div class="finding-id">Patient Portal &nbsp;|&nbsp; /patient/login.php</div>
+      </div>
+      <span class="badge medium">Medium</span>
+    </div>
+    <div class="finding-body">
+      <h3>Description</h3>
+      <p>When an invalid SQL payload was submitted to the login form, the server returned a raw MySQL error message directly in the HTTP response, revealing the underlying database query structure and MySQL version information.</p>
+      <div class="code">
+Warning: mysqli_query(): You have an error in your SQL syntax; check the manual<br>
+that corresponds to your MySQL server version for the right syntax to use near<br>
+'<span class="payload">' OR '1'='1</span>' at line 1
+      </div>
+      <div class="impact">
+        <div class="ev-label">⚠ Impact</div>
+        <p>Verbose error messages assist attackers in refining SQL injection payloads by revealing query structure, database type, and syntax expectations. This information directly aided the successful exploitation documented in F-01.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDING 05 -->
+  <div class="finding">
+    <div class="finding-header">
+      <div>
+        <div class="finding-title">F-05 — Directory Listing Enabled</div>
+        <div class="finding-id">/old/ and /staff/ directories</div>
+      </div>
+      <span class="badge medium">Medium</span>
+    </div>
+    <div class="finding-body">
+      <h3>Description</h3>
+      <p>The web server had directory listing enabled on at least two directories: <code>/old/</code> and <code>/staff/</code>. This allowed any visitor to browse the contents of these directories without authentication, directly leading to the discovery of the exposed database backup file (F-02).</p>
+      <div class="code">
+<span class="url">https://medirozahospital.com/old/</span> → Index of /old/<br>
+&nbsp;&nbsp;mediroza_db_backup_2019.sql &nbsp; 2026-09-04 &nbsp; 7K<br><br>
+<span class="url">https://medirozahospital.com/staff/</span> → Index of /staff/<br>
+&nbsp;&nbsp;login.php &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2026-09-04 &nbsp; 3K
+      </div>
+      <div class="impact">
+        <div class="ev-label">⚠ Impact</div>
+        <p>Directory listing exposes internal file and application structure to any visitor, enabling attackers to identify sensitive files, backup archives, and application entry points without needing to guess paths.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SECTION 04: RISK RATING ═══════════════ -->
+<div class="hdr-strip">
+  <span><strong>NETWORKWALKS</strong> — Penetration Testing Report</span>
+  <span>Client: Mediroza General Hospital &nbsp;|&nbsp; CONFIDENTIAL</span>
+</div>
+<div class="page">
+  <div class="section-num">Section 04</div>
+  <h2>Risk Rating</h2>
+  <p>Each vulnerability has been rated based on its <strong>likelihood of exploitation</strong>, <strong>technical complexity</strong>, and <strong>potential business impact</strong> to the client, particularly in the context of a healthcare organisation handling sensitive patient data.</p>
+
+  <table>
+    <tr><th>ID</th><th>Finding</th><th>Likelihood</th><th>Impact</th><th>Rating</th></tr>
+    <tr>
+      <td>F-01</td><td>SQL Injection — Auth Bypass</td><td>High — trivial payload, no skill required</td><td>Critical — full access to patient records</td><td><span class="badge critical">Critical</span></td>
+    </tr>
+    <tr>
+      <td>F-02</td><td>Exposed DB Backup File</td><td>High — no exploitation required, direct download</td><td>Critical — full staff PII + financial data exposed</td><td><span class="badge critical">Critical</span></td>
+    </tr>
+    <tr>
+      <td>F-03</td><td>Weak PDF Passwords</td><td>High — rockyou.txt wordlist, minutes to crack</td><td>High — confidential patient medical data exposed</td><td><span class="badge high">High</span></td>
+    </tr>
+    <tr>
+      <td>F-04</td><td>Verbose SQL Error Disclosure</td><td>Medium — requires triggering an error</td><td>Medium — aids attacker in payload refinement</td><td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td>F-05</td><td>Directory Listing Enabled</td><td>High — requires only a browser</td><td>Medium — enables file discovery leading to F-02</td><td><span class="badge medium">Medium</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════════════ SECTION 05: RECOMMENDATIONS ═══════════════ -->
+<div class="hdr-strip">
+  <span><strong>NETWORKWALKS</strong> — Penetration Testing Report</span>
+  <span>Client: Mediroza General Hospital &nbsp;|&nbsp; CONFIDENTIAL</span>
+</div>
+<div class="page">
+  <div class="section-num">Section 05</div>
+  <h2>Recommendations and Remediation</h2>
+
+  <h3>F-01 — SQL Injection (Critical Priority)</h3>
+  <div class="remediation">
+    <div class="ev-label">🔧 Recommended Actions</div>
+    <ul>
+      <li><strong>Use Prepared Statements / Parameterised Queries:</strong> Replace all dynamic SQL query construction with prepared statements using PDO or MySQLi. This is the most effective defence against SQL injection.</li>
+      <li><strong>Input Validation:</strong> Validate and sanitise all user-supplied input on the server side before processing.</li>
+      <li><strong>Implement a Web Application Firewall (WAF):</strong> A WAF can detect and block common SQL injection patterns as an additional layer of defence.</li>
+      <li><strong>Principle of Least Privilege:</strong> The database account used by the web application should have only SELECT privileges — not full database access.</li>
+      <li><strong>Code Review:</strong> Conduct a full code audit of all login and query-processing pages across both the patient and staff portals.</li>
+    </ul>
+  </div>
+
+  <h3>F-02 — Exposed Database Backup (Critical Priority)</h3>
+  <div class="remediation">
+    <div class="ev-label">🔧 Recommended Actions</div>
+    <ul>
+      <li><strong>Remove immediately:</strong> Delete or relocate the <code>mediroza_db_backup_2019.sql</code> file from the public web root immediately.</li>
+      <li><strong>Store backups outside web root:</strong> Database backups must never be stored in publicly accessible directories. Use a secure, private location such as <code>/var/backups/</code> outside of <code>/public_html/</code>.</li>
+      <li><strong>Encrypt all backups:</strong> Apply strong encryption to all backup files at rest.</li>
+      <li><strong>Audit all directories:</strong> Review the entire web root for other backup files, configuration files, or exported data.</li>
+      <li><strong>Incident Response:</strong> Given the national ID and salary data exposed, consider notifying affected employees as required under POPIA.</li>
+    </ul>
+  </div>
+
+  <h3>F-03 — Weak PDF Passwords (High Priority)</h3>
+  <div class="remediation">
+    <div class="ev-label">🔧 Recommended Actions</div>
+    <ul>
+      <li><strong>Enforce strong password policy:</strong> Minimum 12 characters, combining uppercase, lowercase, numbers, and symbols. Never use common dictionary words.</li>
+      <li><strong>Use randomly generated passwords:</strong> Generate passwords programmatically using a cryptographically secure random generator for each lab report.</li>
+      <li><strong>Consider a patient portal delivery model:</strong> Instead of password-protected PDFs, deliver reports through the authenticated patient portal where access control is server-enforced.</li>
+      <li><strong>Upgrade encryption standard:</strong> Use AES-256 PDF encryption rather than legacy RC4 128-bit.</li>
+    </ul>
+  </div>
+
+  <h3>F-04 — Verbose Error Disclosure (Medium Priority)</h3>
+  <div class="remediation">
+    <div class="ev-label">🔧 Recommended Actions</div>
+    <ul>
+      <li><strong>Disable display_errors in PHP:</strong> Set <code>display_errors = Off</code> in <code>php.ini</code> for the production environment.</li>
+      <li><strong>Use generic error messages:</strong> Show only "Invalid username or password" — never reveal which field is incorrect or expose SQL syntax.</li>
+      <li><strong>Log errors server-side:</strong> Errors should be logged securely on the server, not displayed to users.</li>
+    </ul>
+  </div>
+
+  <h3>F-05 — Directory Listing (Medium Priority)</h3>
+  <div class="remediation">
+    <div class="ev-label">🔧 Recommended Actions</div>
+    <ul>
+      <li><strong>Disable directory listing on LiteSpeed:</strong> Add <code>Options -Indexes</code> to the <code>.htaccess</code> file in all web directories, or configure this globally in the server settings.</li>
+      <li><strong>Add index files:</strong> Ensure every directory has an index file to prevent directory listing from activating as a fallback.</li>
+      <li><strong>Regular directory audits:</strong> Periodically review publicly accessible directories for any unintended file exposure.</li>
+    </ul>
+  </div>
+
+  <hr class="divider">
+
+  <h3>Remediation Priority Summary</h3>
+  <table>
+    <tr><th>Priority</th><th>Finding</th><th>Action</th><th>Timeline</th></tr>
+    <tr><td><span class="badge critical">Immediate</span></td><td>F-02 — Exposed DB Backup</td><td>Remove file from web root NOW</td><td>Within 24 hours</td></tr>
+    <tr><td><span class="badge critical">Immediate</span></td><td>F-01 — SQL Injection</td><td>Implement prepared statements</td><td>Within 1 week</td></tr>
+    <tr><td><span class="badge high">High</span></td><td>F-03 — Weak PDF Passwords</td><td>Enforce strong password policy</td><td>Within 2 weeks</td></tr>
+    <tr><td><span class="badge medium">Medium</span></td><td>F-04 — Error Disclosure</td><td>Disable display_errors</td><td>Within 1 month</td></tr>
+    <tr><td><span class="badge medium">Medium</span></td><td>F-05 — Directory Listing</td><td>Add Options -Indexes to .htaccess</td><td>Within 1 month</td></tr>
+  </table>
+
+  <hr class="divider">
+
+  <h3>Conclusion</h3>
+  <p>This assessment identified a chain of critical vulnerabilities that, when combined, expose Mediroza General Hospital to significant risk of patient data breach, regulatory penalties, and reputational damage. The most urgent remediation actions are the removal of the exposed database backup file and the patching of the SQL injection vulnerability in the patient portal. It is strongly recommended that a follow-up penetration test be conducted after remediation to verify that all issues have been resolved effectively.</p>
+
+  <br>
+  <table>
+    <tr><td>Prepared By</td><td><strong>Haram</strong> — Penetration Tester, NetworkWalks Internship Batch B083</td></tr>
+    <tr><td>Report Date</td><td>October 2026</td></tr>
+    <tr><td>Classification</td><td>CONFIDENTIAL — For Mediroza General Hospital and NetworkWalks use only</td></tr>
+    <tr><td>Disclaimer</td><td>This assessment was conducted in a controlled environment for educational purposes under written authorisation. Techniques documented herein must never be applied to any system without explicit written permission from the owner.</td></tr>
+  </table>
+</div>
+
+</body>
+</html>
