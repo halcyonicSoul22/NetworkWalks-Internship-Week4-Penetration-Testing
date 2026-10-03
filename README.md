@@ -1,4 +1,4 @@
-<img width="805" height="549" alt="image" src="https://github.com/user-attachments/assets/d0b9f908-a22a-4261-ba34-6298e15e7370" /># NetworkWalks Cybersecurity Internship – Week 4
+# NetworkWalks Cybersecurity Internship – Week 4
 
 This repository documents my **Week 4 practical work** completed during my Cybersecurity Internship at **NetworkWalks**.
 
