@@ -75,7 +75,7 @@ The assessment documented the following categories of security weaknesses:
 
 A sample visual from the penetration testing report is included below:
 
-![Week 4 Penetration Testing Report](./report/1.png)
+!(./report/1.png)
 
 ## 📄 Penetration Testing Report
 
